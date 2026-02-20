@@ -1,0 +1,34 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Rider
+.idea/
+
+# ASP.NET / Blazor
+wwwroot/**/*.bundle.scp
+wwwroot/**/*.js.map
+wwwroot/**/*.css.map
+
+# NuGet
+*.nupkg
+packages/
+*.snupkg
+.nuget/
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# Others
+*.log
+*.vsconfig
