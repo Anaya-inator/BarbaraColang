@@ -1,0 +1,22 @@
+﻿@rendermode InteractiveServer
+
+<MudDrawer @bind-Open="@_open"
+           ClipMode="DrawerClipMode.Always"
+           Elevation="1"
+           Variant="@DrawerVariant.Mini"
+           OpenMiniOnHover="true"
+           Breakpoint="Breakpoint.None">
+
+    <MudNavMenu>
+
+        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">
+            Home
+        </MudNavLink>
+
+    </MudNavMenu>
+
+</MudDrawer>
+
+@code {
+    private bool _open = false;
+}

@@ -1,9 +1,44 @@
 ﻿@inherits LayoutComponentBase
 
-@Body
+@* Required *@
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <!-- TOPBAR -->
+    <MudAppBar Color="Color.Primary" Dense="true">
+        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Edge="Edge.Start" />
+        <MudText Typo="Typo.h5" Class="ml-3">Barbara</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/Anaya-inator/BarbaraColang" Target="_blank"/>
+    </MudAppBar>
+
+    <!-- SIDE LAYOUT -->
+    <SideLayout />
+
+    <!-- MAIN CONTENT -->
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Medium" >
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    bool _drawerOpen = false;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}
+
+
