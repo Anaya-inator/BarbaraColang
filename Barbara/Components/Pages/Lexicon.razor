@@ -1,0 +1,220 @@
+﻿@page "/lexicon"
+@rendermode InteractiveServer
+@inject ILexiconService LexiconService
+
+<PageTitle>Lexicon</PageTitle>
+
+<MudPaper Width="100%" Square="true" Elevation="0" Class="d-inline-flex pa-4 gap-4 object-contain" Style="height: calc(100vh - 64px);">
+
+    <!-- SEARCH GRID -->
+    <MudDataGrid T="LexicalEntry" Items="@Data" FixedHeader="true" Elevation="1"
+    SortMode="SortMode.None" Dense="true" ColumnResizeMode="ResizeMode.Column"
+    SelectOnRowClick="true" SelectedItemChanged="OnSelectedItemChanged"
+    Class="flex-grow-2 cursor-pointer pa-2 flex-column d-flex" Hover="true" Height="100%">
+
+        <ToolBarContent>
+            <MudTextField T="string"
+            Placeholder="Search word..."
+            Immediate="true"
+            Adornment="Adornment.Start"
+            AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="OnSearchChanged" />
+        </ToolBarContent>
+
+        <Columns>
+            <PropertyColumn Property="x => x.Word" Title="Word" />
+            <PropertyColumn Property="x => x.Conlang" Title="Colang" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => OnDeleteClick(context.Item) )" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+
+    </MudDataGrid>
+
+    <!-- EDITFORM -->
+    <MudCard Class="flex-grow-1 pa-2 d-flex flex-column">
+        <MudCardContent Class="flex-grow-1 overflow-auto">
+            <MudText Align="Align.Center">Details</MudText>
+            <MudForm Model="@SelectedModel" @ref="@form" Spacing="2">
+
+                <MudTextField @bind-Value="SelectedModel.Word"
+                For="@(() => SelectedModel.Word)"
+                Variant="Variant.Outlined"
+                Immediate="true"
+                Label="Word" OnlyValidateIfDirty="true" />
+
+                <MudTextField @bind-Value="SelectedModel.Conlang"
+                For="@(() => SelectedModel.Conlang)"
+                Variant="Variant.Outlined"
+                Immediate="true"
+                Label="Conlang" OnlyValidateIfDirty="true" />
+
+                <MudSelect T="WordType?"
+                @bind-Value="SelectedModel.WordType"
+                For="@(() => SelectedModel.WordType)"
+                Variant="Variant.Outlined"
+                Label="WordType" OnlyValidateIfDirty="true"
+                FitContent="false">
+
+                    @foreach (WordType wordType in Enum.GetValues<WordType>())
+                    {
+                        <MudSelectItem T="WordType?" Value="wordType">
+                            @wordType
+                        </MudSelectItem>
+                    }
+
+                </MudSelect>
+
+                <MudTextField T="string" @bind-Value="SelectedModel.Pronunciation"
+                For="@(() => SelectedModel.Pronunciation)"
+                Variant="Variant.Outlined"
+                Immediate="true"
+                Label="Pronunciation" OnlyValidateIfDirty="true" />
+
+                <MudTextField T="string" @bind-Value="SelectedModel.Definition"
+                For="@(() => SelectedModel.Definition)"
+                Label="Definition"
+                Variant="Variant.Outlined"
+                Lines="10"
+                MaxLines="10"
+                MaxLength="700"
+                Sizing="InputSizing.Auto" />
+
+
+                <MudCard Elevation="0" Outlined="true" Class="d-flex flex-column flex-grow-1">
+                    <MudCardHeader>
+                        <MudText Align="Align.Left" >Etimology</MudText>
+                        <MudSpacer />
+                        <MudIconButton Icon="@Icons.Material.Filled.Add" />
+                    </MudCardHeader>
+                    <MudCardContent Class="d-flex flex-row">
+                        @if (SelectedModel.Etimology.Count > 0)
+                        {
+                            @foreach (var item in SelectedModel.Etimology)
+                            {
+                                <MudChip T="string" OnClick="@(() => OnSelectedItemChanged(item))" OnClose="@(() => OnChipDelete(item, SelectedModel.Etimology))">@item.Conlang</MudChip>
+                            }
+                        }else
+                        {
+                            <MudText Typo="Typo.subtitle1" Style="@($"color: {Colors.Gray.Default};")">There are no roots to the word.</MudText>
+                        }
+
+                    </MudCardContent>
+                </MudCard>
+
+
+
+            </MudForm>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Save Changes</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudPaper>
+
+
+
+@code {
+    MudForm form { get; set; } = null!;
+
+    private LexicalEntry SelectedModel = new();
+    private LexicalEntry Model = new();
+
+    bool success;
+
+    private string searchText = string.Empty;
+    private List<LexicalEntry> filteredEntries = new();
+    private List<LexicalEntry> Data => GetEntries();
+
+    protected override void OnInitialized()
+    {
+
+        var c0 = new LexicalEntry() { Word = "Forzar", Conlang = "Tharvir" };
+        var c1 = new LexicalEntry() { Word = "Fuerza", Conlang = "Thar" };
+        var c2 = new LexicalEntry() { Word = "Experimentalmente", Conlang = "Exprensadaviralis" };
+        var c3 = new LexicalEntry() { Word = "Hola", Conlang = "Vay" };
+
+        c0.Etimology.Add(c1);
+        c0.Etimology.Add(c1);
+        c0.Etimology.Add(c1);
+        c0.Etimology.Add(c1);
+        c0.Etimology.Add(c1);
+
+        for (int i = 0; i < 25; i++)
+        {
+            LexiconService.Add(c2);
+            LexiconService.Add(c1);
+            LexiconService.Add(c0);
+            LexiconService.Add(c3);
+        }
+
+        LoadData();
+    }
+
+    #region Search Grid
+
+    private void LoadData()
+    {
+        filteredEntries = LexiconService.GetAll().ToList();
+    }
+
+    private void OnSearchChanged(string text)
+    {
+        searchText = text;
+
+        if (string.IsNullOrWhiteSpace(searchText))
+            filteredEntries = LexiconService.GetAll().ToList();
+        else
+            filteredEntries = LexiconService.Search(searchText);
+
+        StateHasChanged();
+    }
+
+    private void OnSelectedItemChanged(LexicalEntry entry)
+    {
+        if (entry != null)
+        {
+            SelectedModel = entry;
+        }
+        else
+        {
+            SelectedModel = new LexicalEntry();
+        }
+    }
+
+    private void OnDeleteClick(LexicalEntry entry)
+    {
+        LexiconService.Remove(entry);
+        LoadData();
+    }
+
+    private List<LexicalEntry> GetEntries()
+    {
+        if (filteredEntries.Count > 0)
+        {
+            return filteredEntries;
+        }
+        else
+        {
+            return LexiconService.GetAll().ToList();
+        }
+    }
+
+    private void OnChipDelete(LexicalEntry entry, List<LexicalEntry> etimologyList)
+    {
+        etimologyList.Remove(entry);
+    }
+
+    #endregion
+
+    #region MudForm
+
+    private void OnValidSubmit(EditContext context)
+    {
+        success = true;
+        LexiconService.Add(Model);
+    }
+
+    #endregion
+}

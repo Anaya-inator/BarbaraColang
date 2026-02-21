@@ -1,3 +1,5 @@
+using Barbara.Application.Interfaces;
+using Barbara.Application.Services;
 using Barbara.Components;
 using MudBlazor.Services;
 
@@ -9,6 +11,9 @@ builder.Services.AddRazorComponents()
 
 // MudBlazor Services
 builder.Services.AddMudServices();
+
+// Mis Servicios
+builder.Services.AddScoped<ILexiconService, LexiconService>();
 
 var app = builder.Build();
 

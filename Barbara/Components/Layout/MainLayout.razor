@@ -6,10 +6,10 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout>
+<MudLayout Style="height: 100vh; width: 100vw;">
     <!-- TOPBAR -->
     <MudAppBar Color="Color.Primary" Dense="true">
-        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Edge="Edge.Start" />
+        <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Edge="Edge.Start"/>
         <MudText Typo="Typo.h5" Class="ml-3">Barbara</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Href="https://github.com/Anaya-inator/BarbaraColang" Target="_blank"/>
@@ -19,8 +19,8 @@
     <SideLayout />
 
     <!-- MAIN CONTENT -->
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.Medium" >
+    <MudMainContent Style="height: 100%;">
+        <MudContainer Style="height: 100%; width:100%;" MaxWidth="MaxWidth.False">
             @Body
         </MudContainer>
     </MudMainContent>
