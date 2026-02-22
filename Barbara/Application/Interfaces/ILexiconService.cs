@@ -5,8 +5,9 @@ namespace Barbara.Application.Interfaces
 	public interface ILexiconService
 	{
 		IReadOnlyCollection<LexicalEntry> GetAll();
-		void Add(LexicalEntry entry);
-		bool Remove(Guid id);
+		bool Insert(LexicalEntry entry);
+		bool Add(LexicalEntry entry);
+		bool Update(LexicalEntry entry);
 		bool Remove(LexicalEntry entry);
 		List<LexicalEntry> Search(string query);
 	}

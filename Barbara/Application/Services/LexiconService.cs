@@ -1,4 +1,5 @@
-﻿using Barbara.Application.Interfaces;
+﻿using System.Runtime.Versioning;
+using Barbara.Application.Interfaces;
 using Barbara.Domain.Models;
 
 namespace Barbara.Application.Services;
@@ -7,44 +8,50 @@ public class LexiconService : ILexiconService
 {
 	private readonly List<LexicalEntry> _entries = new();
 
-	public IReadOnlyCollection<LexicalEntry> GetAll()
-		=> _entries.AsReadOnly();
+	public IReadOnlyCollection<LexicalEntry> GetAll() => _entries.AsReadOnly();
 
-	public void Add(LexicalEntry entry)
+	#region MÉTODOS
+
+	public bool Insert(LexicalEntry entry)
 	{
-		if (entry == null)
-			throw new ArgumentNullException(nameof(entry));
-
-		if (string.IsNullOrWhiteSpace(entry.Word))
-			throw new ArgumentException("Word cannot be empty.");
-
-		_entries.Add(entry);
+		return Update(entry) || Add(entry);
 	}
 
-	public bool Remove(Guid id)
+	public bool Add(LexicalEntry entry)
 	{
-		var entry = _entries.FirstOrDefault(e => e.Id == id);
-
-		if (entry == null)
+		if (_entries.Contains(entry))
+		{
 			return false;
+		}	
 
-		_entries.Remove(entry);
+		_entries.Add(entry);
+		return true;
+	}
+
+	public bool Update(LexicalEntry entry)
+	{
+		int index = _entries.IndexOf(entry);
+
+		if (index < 0)
+		{
+			return false;
+		}
+		
+		_entries[index] = entry;
 		return true;
 	}
 
 	public bool Remove(LexicalEntry entry)
 	{
-		if (entry == null)
-			return false;
-
-		_entries.Remove(entry);
-		return true;
+		return _entries.Remove(entry);
 	}
 
 	public List<LexicalEntry> Search(string query)
 	{
 		if (string.IsNullOrWhiteSpace(query))
+		{
 			return new List<LexicalEntry>();
+		}
 
 		query = query.Trim();
 
@@ -54,4 +61,6 @@ public class LexiconService : ILexiconService
 				e.Conlang.Contains(query, StringComparison.OrdinalIgnoreCase))
 			.ToList();
 	}
+
+	#endregion
 }

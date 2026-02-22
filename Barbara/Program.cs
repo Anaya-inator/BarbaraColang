@@ -1,6 +1,7 @@
 using Barbara.Application.Interfaces;
 using Barbara.Application.Services;
 using Barbara.Components;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // MudBlazor Services
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+	config.SnackbarConfiguration.VisibleStateDuration = 3000;
+	config.SnackbarConfiguration.HideTransitionDuration = 1000;
+});
 
 // Mis Servicios
 builder.Services.AddScoped<ILexiconService, LexiconService>();
